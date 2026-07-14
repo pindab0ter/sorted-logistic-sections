@@ -19,13 +19,14 @@ local function toggle_sorting_enabled(player)
 end
 
 --- @param player LuaPlayer
---- @param entity LuaEntity
+--- @param entity LuaEntity?
 local function apply_sorting_if_enabled(player, entity)
     if not storage.sorting_enabled[player.index] then
         return
     end
 
-    if not player.valid or not entity.valid then
+    -- entity can be nil, e.g. player.character in remote view, the map editor or as a spectator
+    if not player.valid or entity == nil or not entity.valid then
         return
     end
 
