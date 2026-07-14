@@ -12,6 +12,7 @@ Date: 2026-07-14
     - Fixed a crash when toggling sorting without a character, e.g. in remote view
     - Fixed a crash when sorting filters without a quality or comparator, or from removed mods
     - Fixed internal bookkeeping growing indefinitely over the lifetime of a save
+    - Fixed the hotkey showing an untranslated name in the controls settings
 ---------------------------------------------------------------------------------------------------
 Version: 1.2.0
 Date: 2024-12-18
