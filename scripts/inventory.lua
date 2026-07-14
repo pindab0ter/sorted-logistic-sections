@@ -25,31 +25,36 @@ local prototype_table_names = {
 }
 
 --- @param filter LogisticFilter
---- @return LuaPrototypeBase
+--- @return LuaPrototypeBase?
 local function get_prototype(filter)
     local table_name = prototype_table_names[filter.value.type or "item"]
-    local prototype = table_name and prototypes[table_name][filter.value.name]
 
-    if prototype == nil then
-        error("Prototype not found: " .. filter.value.name)
-    end
-
-    return prototype
+    return table_name and prototypes[table_name][filter.value.name] or nil
 end
 
 --- @param a LogisticFilter
 --- @param b LogisticFilter
 --- @return boolean
 local function filter_comparator(a, b)
-    if a == nil or a.value == nil or b == nil or b.value == nil then
-        error("Found nil, expected LogisticFilter")
-    end
-
     local prototype_a = get_prototype(a)
     local prototype_b = get_prototype(b)
 
+    -- Filters without a known prototype sort to the end, by type and name
     if prototype_a == nil or prototype_b == nil then
-        error("Found nil, expected LuaPrototypeBase")
+        if prototype_a ~= nil then
+            return true
+        end
+        if prototype_b ~= nil then
+            return false
+        end
+
+        local type_a = a.value.type or "item"
+        local type_b = b.value.type or "item"
+        if type_a ~= type_b then
+            return type_a < type_b
+        end
+
+        return a.value.name < b.value.name
     end
 
     if prototype_a.group.order ~= prototype_b.group.order then
@@ -64,21 +69,23 @@ local function filter_comparator(a, b)
         return prototype_a.order < prototype_b.order
     end
 
-    if a.value.quality ~= b.value.quality then
-        --- @type LuaQualityPrototype
-        local quality_a = prototypes.quality[a.value.quality]
-        --- @type LuaQualityPrototype
-        local quality_b = prototypes.quality[b.value.quality]
+    local quality_name_a = a.value.quality or "normal"
+    local quality_name_b = b.value.quality or "normal"
+    if quality_name_a ~= quality_name_b then
+        local quality_a = prototypes.quality[quality_name_a]
+        local quality_b = prototypes.quality[quality_name_b]
 
         if quality_a == nil or quality_b == nil then
-            error("Found nil, expected LuaQualityPrototype")
+            return quality_name_a < quality_name_b
         end
 
         return quality_a.order < quality_b.order
     end
 
-    if a.value.comparator ~= b.value.comparator then
-        return comparator_order[a.value.comparator] < comparator_order[b.value.comparator]
+    local comparator_a = comparator_order[a.value.comparator or "="] or 99
+    local comparator_b = comparator_order[b.value.comparator or "="] or 99
+    if comparator_a ~= comparator_b then
+        return comparator_a < comparator_b
     end
 
     return false
