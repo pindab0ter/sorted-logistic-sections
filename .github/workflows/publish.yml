@@ -10,20 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Validate mod
-        uses: TheBrutalX/factorio-mod-uploader-action@v1
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
         with:
           action: validate
 
       - name: Create zip file
-        uses: TheBrutalX/factorio-mod-uploader-action@v1
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
         with:
           action: compress
+          # Work around https://github.com/TheBrutalX/Factorio-mod-uploader-action/issues/69
+          auto-update-version: "false"
 
       - name: Upload mod
-        uses: TheBrutalX/factorio-mod-uploader-action@v1
+        uses: TheBrutalX/factorio-mod-uploader-action@v2
         with:
           action: upload
           factorio-api-key: ${{ secrets.FACTORIO_API_KEY }}
