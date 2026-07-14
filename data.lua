@@ -10,6 +10,7 @@ data:extend({
         name = "sorted-logistic-sections-toggle",
         action = "lua",
         toggleable = true,
+        associated_control_input = "sorted-logistic-sections-hotkey",
         icon = "__sorted-logistic-sections__/graphics/shortcut_32.png",
         icon_size = 32,
         small_icon = "__sorted-logistic-sections__/graphics/shortcut_24.png",

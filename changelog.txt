@@ -7,6 +7,8 @@ Date: 2026-07-14
     - Added a per-player option to start each subgroup on a new row
   Changes:
     - Updated for Factorio 2.1
+    - New shortcut icon
+    - The shortcut tooltip now shows the assigned hotkey
   Bugfixes:
     - Fixed a crash when sorting sections containing asteroid chunk requests
     - Fixed a crash when toggling sorting without a character, e.g. in remote view
