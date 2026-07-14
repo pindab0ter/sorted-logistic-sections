@@ -127,6 +127,19 @@ local function on_blueprint_settings_pasted(event)
     apply_sorting_if_enabled(player, event.entity)
 end
 
+--- Editing a ghost's logistic sections is not guaranteed to fire on_entity_logistic_slot_changed,
+--- so ghosts are also sorted when their GUI is closed
+--- @param event EventData.on_gui_closed
+local function on_gui_closed(event)
+    if event.entity == nil or event.entity.type ~= "entity-ghost" then
+        return
+    end
+
+    local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
+
+    apply_sorting_if_enabled(player, event.entity)
+end
+
 --- @param event EventData.on_lua_shortcut|EventData.CustomInputEvent
 local function on_toggle_triggered(event)
     local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
@@ -157,5 +170,6 @@ script.on_event(defines.events.on_player_removed, on_player_removed)
 script.on_event(defines.events.on_entity_logistic_slot_changed, on_entity_logistic_slot_changed)
 script.on_event(defines.events.on_entity_settings_pasted, on_entity_settings_pasted)
 script.on_event(defines.events.on_blueprint_settings_pasted, on_blueprint_settings_pasted)
+script.on_event(defines.events.on_gui_closed, on_gui_closed)
 script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 script.on_event("sorted-logistic-sections-hotkey", on_toggle_triggered)
