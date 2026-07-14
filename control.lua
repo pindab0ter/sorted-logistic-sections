@@ -43,16 +43,17 @@ end
 --- @param entity LuaEntity
 --- @return boolean
 local function was_sorted_this_tick(entity)
-    if storage.last_sorted_on_tick == nil then
-        storage.last_sorted_on_tick = {}
+    -- Only the current tick is ever compared against, so older entries can be dropped wholesale
+    if storage.last_sorted == nil or storage.last_sorted.tick ~= game.tick then
+        storage.last_sorted = { tick = game.tick, entities = {} }
     end
 
-    if not (storage.last_sorted_on_tick[entity.unit_number] == game.tick) then
-        storage.last_sorted_on_tick[entity.unit_number] = game.tick
-        return false
+    if storage.last_sorted.entities[entity.unit_number] then
+        return true
     end
 
-    return true
+    storage.last_sorted.entities[entity.unit_number] = true
+    return false
 end
 
 
@@ -64,7 +65,8 @@ local function on_configuration_changed()
     if storage.sorting_enabled == nil then
         storage.sorting_enabled = {}
     end
-    storage.last_sorted_on_tick = {}
+    storage.last_sorted = nil
+    storage.last_sorted_on_tick = nil
 
     for _, player in pairs(game.players) do
         if storage.sorting_enabled[player.index] == nil then
@@ -86,7 +88,7 @@ end
 
 --- @param event EventData.on_entity_logistic_slot_changed
 local function on_entity_logistic_slot_changed(event)
-    if was_sorted_this_tick(event.entity) or event.player_index == nil then
+    if event.player_index == nil or was_sorted_this_tick(event.entity) then
         return
     end
 
