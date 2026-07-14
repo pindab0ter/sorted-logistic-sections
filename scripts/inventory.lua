@@ -12,26 +12,23 @@ local comparator_order = {
     [">"] = 9,
 }
 
+--- Maps SignalIDType to the corresponding table in `prototypes`
+local prototype_table_names = {
+    ["item"] = "item",
+    ["fluid"] = "fluid",
+    ["virtual"] = "virtual_signal",
+    ["entity"] = "entity",
+    ["recipe"] = "recipe",
+    ["space-location"] = "space_location",
+    ["asteroid-chunk"] = "asteroid_chunk",
+    ["quality"] = "quality",
+}
+
 --- @param filter LogisticFilter
 --- @return LuaPrototypeBase
 local function get_prototype(filter)
-    local prototype = nil
-
-    if filter.value.type == "space-location" then
-        prototype = prototypes.space_location[filter.value.name]
-    elseif filter.value.type == "item" then
-        prototype = prototypes.item[filter.value.name]
-    elseif filter.value.type == "virtual" then
-        prototype = prototypes.virtual_signal[filter.value.name]
-    elseif filter.value.type == "fluid" then
-        prototype = prototypes.fluid[filter.value.name]
-    elseif filter.value.type == "entity" then
-        prototype = prototypes.entity[filter.value.name]
-    elseif filter.value.type == "recipe" then
-        prototype = prototypes.recipe[filter.value.name]
-    elseif filter.value.type == "quality" then
-        prototype = prototypes.quality[filter.value.name]
-    end
+    local table_name = prototype_table_names[filter.value.type or "item"]
+    local prototype = table_name and prototypes[table_name][filter.value.name]
 
     if prototype == nil then
         error("Prototype not found: " .. filter.value.name)
