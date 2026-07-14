@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.0
 Date: 2026-07-14
+  Features:
+    - Sorting is now also applied when pasting entity settings or blueprint settings
   Changes:
     - Updated for Factorio 2.1
   Bugfixes:

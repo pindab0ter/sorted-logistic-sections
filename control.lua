@@ -43,6 +43,10 @@ end
 --- @param entity LuaEntity
 --- @return boolean
 local function was_sorted_this_tick(entity)
+    if entity.unit_number == nil then
+        return false
+    end
+
     -- Only the current tick is ever compared against, so older entries can be dropped wholesale
     if storage.last_sorted == nil or storage.last_sorted.tick ~= game.tick then
         storage.last_sorted = { tick = game.tick, entities = {} }
@@ -97,6 +101,32 @@ local function on_entity_logistic_slot_changed(event)
     apply_sorting_if_enabled(player, event.entity)
 end
 
+--- @param event EventData.on_entity_settings_pasted
+local function on_entity_settings_pasted(event)
+    local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
+
+    if was_sorted_this_tick(event.destination) then
+        return
+    end
+
+    apply_sorting_if_enabled(player, event.destination)
+end
+
+--- @param event EventData.on_blueprint_settings_pasted
+local function on_blueprint_settings_pasted(event)
+    if event.player_index == nil then
+        return
+    end
+
+    local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
+
+    if was_sorted_this_tick(event.entity) then
+        return
+    end
+
+    apply_sorting_if_enabled(player, event.entity)
+end
+
 --- @param event EventData.on_lua_shortcut|EventData.CustomInputEvent
 local function on_toggle_triggered(event)
     local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
@@ -125,5 +155,7 @@ script.on_configuration_changed(on_configuration_changed)
 script.on_event(defines.events.on_player_created, on_player_created)
 script.on_event(defines.events.on_player_removed, on_player_removed)
 script.on_event(defines.events.on_entity_logistic_slot_changed, on_entity_logistic_slot_changed)
+script.on_event(defines.events.on_entity_settings_pasted, on_entity_settings_pasted)
+script.on_event(defines.events.on_blueprint_settings_pasted, on_blueprint_settings_pasted)
 script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 script.on_event("sorted-logistic-sections-hotkey", on_toggle_triggered)
