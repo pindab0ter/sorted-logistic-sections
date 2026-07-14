@@ -93,7 +93,8 @@ end
 
 --- Sorts the filters by prototype order, then by quality and comparator.
 --- @param section LuaLogisticSection
-local function sort_section(section)
+--- @param new_line_per_subgroup boolean?
+local function sort_section(section, new_line_per_subgroup)
     --- @type LogisticFilter[]
     local sorted_filters = {}
 
@@ -105,11 +106,34 @@ local function sort_section(section)
 
     table.sort(sorted_filters, filter_comparator)
 
-    section.filters = sorted_filters
+    if not new_line_per_subgroup then
+        section.filters = sorted_filters
+        return
+    end
+
+    -- Lay the filters out manually so that every subgroup starts on a new row of 10 slots
+    section.filters = {}
+
+    local slot_index = 1
+    local previous_subgroup = nil
+    for _, filter in pairs(sorted_filters) do
+        local prototype = get_prototype(filter)
+        local subgroup = prototype and prototype.subgroup.name or "unknown"
+
+        local at_start_of_row = (slot_index - 1) % 10 == 0
+        if previous_subgroup ~= nil and subgroup ~= previous_subgroup and not at_start_of_row then
+            slot_index = math.ceil(slot_index / 10) * 10 + 1
+        end
+
+        section.set_slot(slot_index, filter)
+        slot_index = slot_index + 1
+        previous_subgroup = subgroup
+    end
 end
 
 --- @param entity LuaEntity
-inventory_sort.sort_logistic_sections = function(entity)
+--- @param new_line_per_subgroup boolean?
+inventory_sort.sort_logistic_sections = function(entity, new_line_per_subgroup)
     if entity == nil or not entity.valid then
         return
     end
@@ -122,7 +146,7 @@ inventory_sort.sort_logistic_sections = function(entity)
 
     for _, section in pairs(logistic_sections.sections) do
         if section.is_manual then
-            sort_section(section)
+            sort_section(section, new_line_per_subgroup)
         end
     end
 end

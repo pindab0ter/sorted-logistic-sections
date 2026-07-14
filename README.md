@@ -15,9 +15,8 @@ This mod is in active development. Please report any bugs you find to help impro
 
 ## Usage
 
-Every change you make in an entity with a logistic section triggers a sort.
-
-If you don’t touch an entity’s logistic sections, they will not get sorted.
+While sorting is enabled, an entity’s logistic sections are sorted when you open it and whenever you
+change them. Entities you never open are left alone.
 
 ## Changelog
 

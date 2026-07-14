@@ -30,7 +30,10 @@ local function apply_sorting_if_enabled(player, entity)
         return
     end
 
-    inventory.sort_logistic_sections(entity)
+    local new_line_per_subgroup = settings.get_player_settings(player)["sorted-logistic-sections-subgroup-new-line"]
+        .value --[[@as boolean]]
+
+    inventory.sort_logistic_sections(entity, new_line_per_subgroup)
 end
 
 --- @param player LuaPlayer
@@ -127,6 +130,19 @@ local function on_blueprint_settings_pasted(event)
     apply_sorting_if_enabled(player, event.entity)
 end
 
+--- Sorting on open keeps sections laid out according to the current settings, without having to
+--- edit a slot first
+--- @param event EventData.on_gui_opened
+local function on_gui_opened(event)
+    local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
+
+    if event.gui_type == defines.gui_type.entity then
+        apply_sorting_if_enabled(player, event.entity)
+    elseif event.gui_type == defines.gui_type.controller then
+        apply_sorting_if_enabled(player, player.character)
+    end
+end
+
 --- Editing a ghost's logistic sections is not guaranteed to fire on_entity_logistic_slot_changed,
 --- so ghosts are also sorted when their GUI is closed
 --- @param event EventData.on_gui_closed
@@ -170,6 +186,7 @@ script.on_event(defines.events.on_player_removed, on_player_removed)
 script.on_event(defines.events.on_entity_logistic_slot_changed, on_entity_logistic_slot_changed)
 script.on_event(defines.events.on_entity_settings_pasted, on_entity_settings_pasted)
 script.on_event(defines.events.on_blueprint_settings_pasted, on_blueprint_settings_pasted)
+script.on_event(defines.events.on_gui_opened, on_gui_opened)
 script.on_event(defines.events.on_gui_closed, on_gui_closed)
 script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
 script.on_event("sorted-logistic-sections-hotkey", on_toggle_triggered)

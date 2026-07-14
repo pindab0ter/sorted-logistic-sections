@@ -4,6 +4,7 @@ Date: 2026-07-14
   Features:
     - Sorting is now also applied when pasting entity settings or blueprint settings
     - Added sorting of logistic sections in ghosts
+    - Added a per-player option to start each subgroup on a new row
   Changes:
     - Updated for Factorio 2.1
   Bugfixes:
