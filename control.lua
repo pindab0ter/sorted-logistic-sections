@@ -97,12 +97,8 @@ local function on_entity_logistic_slot_changed(event)
     apply_sorting_if_enabled(player, event.entity)
 end
 
---- @param event EventData.on_lua_shortcut
-local function on_lua_shortcut(event)
-    if event.prototype_name ~= "sorted-logistic-sections-toggle" then
-        return
-    end
-
+--- @param event EventData.on_lua_shortcut|EventData.CustomInputEvent
+local function on_toggle_triggered(event)
     local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
 
     toggle_sorting_enabled(player)
@@ -110,13 +106,13 @@ local function on_lua_shortcut(event)
     apply_sorting_if_enabled(player, player.character)
 end
 
---- @param event EventData.CustomInputEvent
-local function on_sorted_logistic_section_hotkey(event)
-    local player = game.get_player(event.player_index) or error("Player " .. event.player_index .. " not found")
+--- @param event EventData.on_lua_shortcut
+local function on_lua_shortcut(event)
+    if event.prototype_name ~= "sorted-logistic-sections-toggle" then
+        return
+    end
 
-    toggle_sorting_enabled(player)
-
-    apply_sorting_if_enabled(player, player.character)
+    on_toggle_triggered(event)
 end
 
 
@@ -130,4 +126,4 @@ script.on_event(defines.events.on_player_created, on_player_created)
 script.on_event(defines.events.on_player_removed, on_player_removed)
 script.on_event(defines.events.on_entity_logistic_slot_changed, on_entity_logistic_slot_changed)
 script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
-script.on_event("sorted-logistic-sections-hotkey", on_sorted_logistic_section_hotkey)
+script.on_event("sorted-logistic-sections-hotkey", on_toggle_triggered)

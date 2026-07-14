@@ -91,38 +91,21 @@ local function filter_comparator(a, b)
     return false
 end
 
---- Sorts the filter item order using a `LuaInventory` and then sorts the filters with the same items by quality and
---- comparator.
+--- Sorts the filters by prototype order, then by quality and comparator.
 --- @param section LuaLogisticSection
 local function sort_section(section)
-    ---@type table<number, LogisticFilter>
-    local filter_buffer = {}
+    --- @type LogisticFilter[]
+    local sorted_filters = {}
 
-    local filter_buffer_index = 1
     for _, filter in pairs(section.filters) do
-        if filter == nil or not filter.value then
-            goto continue
+        if filter and filter.value then
+            sorted_filters[#sorted_filters + 1] = filter
         end
-
-        filter_buffer[filter_buffer_index] = filter
-        filter_buffer_index = filter_buffer_index + 1
-
-        ::continue::
     end
 
-    table.sort(filter_buffer, filter_comparator)
+    table.sort(sorted_filters, filter_comparator)
 
-    -- Clear all filters from the section so we can re-add them in the correct order without running into conflicts
-    for index, _ in pairs(section.filters) do
-        section.clear_slot(index)
-    end
-
-    -- Insert the filters back in, in the order of the sorted inventory
-    local slot_index = 1
-    for _, filter in pairs(filter_buffer) do
-        section.set_slot(slot_index, filter)
-        slot_index = slot_index + 1
-    end
+    section.filters = sorted_filters
 end
 
 --- @param entity LuaEntity
