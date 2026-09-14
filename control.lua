@@ -185,7 +185,10 @@ script.on_event(defines.events.on_player_created, on_player_created)
 script.on_event(defines.events.on_player_removed, on_player_removed)
 script.on_event(defines.events.on_entity_logistic_slot_changed, on_entity_logistic_slot_changed)
 script.on_event(defines.events.on_entity_settings_pasted, on_entity_settings_pasted)
-script.on_event(defines.events.on_blueprint_settings_pasted, on_blueprint_settings_pasted)
+-- on_blueprint_settings_pasted was added in Factorio 2.1
+if defines.events.on_blueprint_settings_pasted then
+    script.on_event(defines.events.on_blueprint_settings_pasted, on_blueprint_settings_pasted)
+end
 script.on_event(defines.events.on_gui_opened, on_gui_opened)
 script.on_event(defines.events.on_gui_closed, on_gui_closed)
 script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)

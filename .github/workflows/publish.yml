@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - factorio-2.0
 
 jobs:
   publish:
