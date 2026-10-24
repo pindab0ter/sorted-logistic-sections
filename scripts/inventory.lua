@@ -69,6 +69,10 @@ local function filter_comparator(a, b)
         return prototype_a.order < prototype_b.order
     end
 
+    if prototype_a.name ~= prototype_b.name then
+        return prototype_a.name < prototype_b.name
+    end
+
     local quality_name_a = a.value.quality or "normal"
     local quality_name_b = b.value.quality or "normal"
     if quality_name_a ~= quality_name_b then
