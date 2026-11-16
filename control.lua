@@ -32,8 +32,10 @@ local function apply_sorting_if_enabled(player, entity)
 
     local new_line_per_subgroup = settings.get_player_settings(player)["sorted-logistic-sections-subgroup-new-line"]
         .value --[[@as boolean]]
+    local skip_prefix = settings.get_player_settings(player)["sorted-logistic-sections-skip-prefix"]
+        .value --[[@as string]]
 
-    inventory.sort_logistic_sections(entity, new_line_per_subgroup)
+    inventory.sort_logistic_sections(entity, new_line_per_subgroup, skip_prefix)
 end
 
 --- @param player LuaPlayer

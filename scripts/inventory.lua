@@ -135,9 +135,24 @@ local function sort_section(section, new_line_per_subgroup)
     end
 end
 
+--- Plain prefix check, so characters like `[` in rich text names are not treated as patterns
+--- @param section LuaLogisticSection
+--- @param skip_prefix string?
+--- @return boolean
+local function is_skipped(section, skip_prefix)
+    if skip_prefix == nil or skip_prefix == "" then
+        return false
+    end
+
+    local group = section.group or ""
+
+    return string.sub(group, 1, #skip_prefix) == skip_prefix
+end
+
 --- @param entity LuaEntity
 --- @param new_line_per_subgroup boolean?
-inventory_sort.sort_logistic_sections = function(entity, new_line_per_subgroup)
+--- @param skip_prefix string? Sections whose group name starts with this are left untouched
+inventory_sort.sort_logistic_sections = function(entity, new_line_per_subgroup, skip_prefix)
     if entity == nil or not entity.valid then
         return
     end
@@ -149,7 +164,7 @@ inventory_sort.sort_logistic_sections = function(entity, new_line_per_subgroup)
     end
 
     for _, section in pairs(logistic_sections.sections) do
-        if section.is_manual then
+        if section.is_manual and not is_skipped(section, skip_prefix) then
             sort_section(section, new_line_per_subgroup)
         end
     end
